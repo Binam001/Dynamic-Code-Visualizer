@@ -1,5 +1,7 @@
 import React, { useRef, useState } from 'react'
 import MonacoEditor from 'react-monaco-editor'
+import { Link } from 'react-router-dom';
+import ToolBar from '../components/ToolBar';
 
 function CodeEditor() {
   // Called before the editor is mounted
@@ -33,7 +35,7 @@ function CodeEditor() {
 
   return (
     <div className="">
-      <div className='h-10 bg-[var(--dark-bg-color)] flex items-center px-3'>tool bar</div>
+      <ToolBar />
       <div className="flex gap-1 mt-1 h-[calc(100vh-(40px+4px))]">
         <div className="w-[70%] pt-2 rounded-md bg-[var(--dark-bg-color)]">
         <MonacoEditor
