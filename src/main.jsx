@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import CodeEditor from './pages/CodeEditor.jsx'
 import AboutUs from './pages/AboutUs.jsx'
 import RootLayout from './RootLayout.jsx'
+// import './config/monacoConfig.js'
 
 const router = createBrowserRouter([
   {

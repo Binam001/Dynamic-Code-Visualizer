@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 function LandingPage() {
   return (
@@ -18,12 +19,12 @@ function LandingPage() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <a
-                    href="/codeEditor"
+                  <Link
+                    to="/codeEditor"
                     className="inline-flex h-10 items-center justify-center rounded-md bg-white border-gray-200 px-8 text-sm font-medium text-black shadow transition-colors hover:bg-gray-100"
                   >
                     Try It Now
-                  </a>
+                  </Link>
                   <a
                     href="#features"
                     className="inline-flex h-10 items-center justify-center rounded-md border border-gray-100 bg-[var(--dark-bg-color)] px-8 text-sm font-medium shadow-sm transition-colors hover:bg-[var(--grey-color)]"

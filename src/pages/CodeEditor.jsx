@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react'
-import MonacoEditor from 'react-monaco-editor'
+import React, { useState } from 'react';
+import MonacoEditor from 'react-monaco-editor';
 import * as monaco from 'monaco-editor';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
 import 'monaco-editor/esm/vs/basic-languages/python/python.contribution';
@@ -7,9 +7,13 @@ import 'monaco-editor/esm/vs/basic-languages/java/java.contribution';
 import 'monaco-editor/esm/vs/basic-languages/cpp/cpp.contribution';
 import ToolBar from '../components/ToolBar';
 import { CODE_SNIPPETS } from '../constraints';
+import Output from '../components/Output';
 
 function CodeEditor() {
-  // Called before the editor is mounted
+  const [code, setCode] = useState(CODE_SNIPPETS['javascript']);
+  const [selectedLanguage, setSelectedLanguage] = useState('javascript');
+  const [output, setOutput] = useState('');
+
   const editorWillMount = (monaco) => {
     monaco.editor.defineTheme('my-dark-theme', {
       base: 'vs-dark',
@@ -33,50 +37,36 @@ function CodeEditor() {
     });
   };
 
-  const [code, setCode] = useState(CODE_SNIPPETS['javascript'])
-  const [selectedLanguage, setSelectedLanguage] = useState('javascript');
-  const editorRef = useRef()
-
-  const onMount = (editor) => {
-    editorRef.current = editor;
-    editor.focus();
-  }
-
   const handleLanguageChange = (language) => {
-    setSelectedLanguage(language); // Update the selected language
-    setCode(CODE_SNIPPETS[language]); // Update the code with the corresponding snippet
+    setSelectedLanguage(language);
+    setCode(CODE_SNIPPETS[language]);
   };
 
   return (
     <div>
-      <ToolBar selectedLanguage={selectedLanguage} setSelectedLanguage={handleLanguageChange} />
+      <ToolBar
+        code={code}
+        selectedLanguage={selectedLanguage}
+        setSelectedLanguage={handleLanguageChange}
+        setOutput={setOutput} // Pass setOutput to ToolBar
+      />
       <div className="flex gap-1 mt-1 h-[calc(100vh-(40px+4px))]">
         <div className="w-[70%] pt-2 rounded-md bg-[var(--dark-bg-color)]">
-        <MonacoEditor
-          // width="800"
-          // height="600"
-          // language="javascript"
-          language={selectedLanguage}
-          // theme="vs-dark"
-          theme="my-dark-theme"
-          editorWillMount={editorWillMount}
-          // defaultValue="// Write a program ..."
-          value={code}
-          onChange={(value)=> setCode(value)}
-          onMount={onMount}
-          // options={options}
-          // onChange={::this.onChange}
-          // editorDidMount={::this.editorDidMount}
-        />
+          <MonacoEditor
+            language={selectedLanguage}
+            theme="my-dark-theme"
+            editorWillMount={editorWillMount}
+            value={code}
+            onChange={(value) => setCode(value)}
+          />
         </div>
 
         <div className="w-[30%] rounded-md bg-[var(--dark-bg-color)] p-2">
-          right
+          <Output output={output} /> {/* Only pass output */}
         </div>
       </div>
-
     </div>
-  )
+  );
 }
 
-export default CodeEditor
+export default CodeEditor;
