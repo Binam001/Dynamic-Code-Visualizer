@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import LanguageSelector from './LanguageSelector';
 import { executeCode } from '../api';
 
-function ToolBar({ code, selectedLanguage, setSelectedLanguage, setOutput }) {
+function ToolBar({ code, selectedLanguage, setSelectedLanguage, setOutput, setLoading }) {
   const runCode = async () => {
     if (!code) {
       console.warn('No source code to execute.');
       return;
     }
-
+    setLoading(true);
     try {
       const result = await executeCode(selectedLanguage, code);
       console.log('Execution result:', result);
@@ -20,6 +20,8 @@ function ToolBar({ code, selectedLanguage, setSelectedLanguage, setOutput }) {
     } catch (error) {
       console.error('Error executing code:', error);
       setOutput('Error executing code.'); // Display error message in the output
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 

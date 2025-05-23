@@ -13,6 +13,7 @@ function CodeEditor() {
   const [code, setCode] = useState(CODE_SNIPPETS['javascript']);
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
   const [output, setOutput] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const editorWillMount = (monaco) => {
     monaco.editor.defineTheme('my-dark-theme', {
@@ -49,6 +50,7 @@ function CodeEditor() {
         selectedLanguage={selectedLanguage}
         setSelectedLanguage={handleLanguageChange}
         setOutput={setOutput} // Pass setOutput to ToolBar
+        setLoading={setLoading}
       />
       <div className="flex gap-1 mt-1 h-[calc(100vh-(40px+4px))]">
         <div className="w-[70%] pt-2 rounded-md bg-[var(--dark-bg-color)]">
@@ -62,7 +64,7 @@ function CodeEditor() {
         </div>
 
         <div className="w-[30%] rounded-md bg-[var(--dark-bg-color)] p-2">
-          <Output output={output} /> {/* Only pass output */}
+          <Output output={output} loading={loading} /> {/* Only pass output */}
         </div>
       </div>
     </div>
