@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import * as monaco from 'monaco-editor';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
@@ -43,31 +43,95 @@ function CodeEditor() {
     setCode(CODE_SNIPPETS[language]);
   };
 
-  return (
-    <div>
-      <ToolBar
-        code={code}
-        selectedLanguage={selectedLanguage}
-        setSelectedLanguage={handleLanguageChange}
-        setOutput={setOutput} // Pass setOutput to ToolBar
-        setLoading={setLoading}
-      />
-      <div className="flex gap-1 mt-1 h-[calc(100vh-(40px+4px))]">
-        <div className="w-[70%] pt-2 rounded-md bg-[var(--dark-bg-color)]">
-          <MonacoEditor
-            language={selectedLanguage}
-            theme="my-dark-theme"
-            editorWillMount={editorWillMount}
-            value={code}
-            onChange={(value) => setCode(value)}
-          />
-        </div>
+    const editorRef = useRef(null);
 
-        <div className="w-[30%] rounded-md bg-[var(--dark-bg-color)] p-2">
-          <Output output={output} loading={loading} /> {/* Only pass output */}
+  const handleEditorDidMount = (editor, monacoInstance) => {
+    editorRef.current = editor;
+  };
+
+  const highlightError = (line, column, message) => {
+    if (!editorRef.current) return; // Prevent error if not mounted
+    monaco.editor.setModelMarkers(
+      editorRef.current.getModel(),
+      'owner',
+      [
+        {
+          startLineNumber: line,
+          startColumn: column,
+          endLineNumber: line,
+          endColumn: column + 1,
+          message,
+          severity: monaco.MarkerSeverity.Error,
+        },
+      ]
+    );
+    showInlineError(line, column, message);
+  };
+
+  // Inline error decoration
+  const showInlineError = (line, column, message) => {
+    if (!editorRef.current) return;
+    editorRef.current.deltaDecorations(
+      [],
+      [
+        {
+          range: new monaco.Range(line, column, line, column),
+          options: {
+            after: {
+              content: ` ← ${message}`,
+              inlineClassName: 'monaco-inline-error',
+              // Inline style using afterContentClassName is not supported,
+              // so we use a <style> tag below to inject CSS.
+            },
+          },
+        },
+      ]
+    );
+  };
+
+  // Inject inline CSS for the error decoration
+  // Place this inside your component's return, just before the main JSX
+  const inlineErrorStyle = (
+    <style>
+      {`
+        .monaco-inline-error {
+          color: #ff5555 !important;
+          font-style: italic;
+          margin-left: 8px;
+        }
+      `}
+    </style>
+  );
+
+  return (
+     <>
+      {inlineErrorStyle}
+      <div>
+        <ToolBar
+          code={code}
+          selectedLanguage={selectedLanguage}
+          setSelectedLanguage={handleLanguageChange}
+          setOutput={setOutput}
+          setLoading={setLoading}
+           highlightError={highlightError}
+        />
+        <div className="flex gap-1 mt-1 h-[calc(100vh-(40px+4px))]">
+          <div className="w-[70%] pt-2 rounded-md bg-[var(--dark-bg-color)]">
+            <MonacoEditor
+              language={selectedLanguage}
+              theme="my-dark-theme"
+              editorWillMount={editorWillMount}
+              onMount={handleEditorDidMount}
+              value={code}
+              onChange={(value) => setCode(value)}
+            />
+          </div>
+          <div className="w-[30%] rounded-md bg-[var(--dark-bg-color)] p-2">
+            <Output output={output} loading={loading} />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
